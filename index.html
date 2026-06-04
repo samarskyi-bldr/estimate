@@ -7,63 +7,78 @@
 <title>Кошторис · SAMARSKYI</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%;overflow:hidden}
-body{height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif}
+html,body{height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif}
 
 .app{position:fixed;inset:0;overflow:hidden;touch-action:none}
-.track{display:flex;height:100%;will-change:transform;transition:transform .42s cubic-bezier(.4,0,.2,1)}
+.track{display:flex;height:100%;will-change:transform;transition:transform .44s cubic-bezier(.4,0,.2,1)}
 .slide{min-width:100vw;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative}
 
 .s0{background:#0d1b2a}.s1{background:#1c0d00}.s2{background:#001a12}.s3{background:#0f0a1c}.s4{background:#091009}
 
-/* accent top line */
-.slide::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;z-index:5}
-.s0::after{background:rgba(255,255,255,.18)}
-.s1::after{background:#ff8c3c}
-.s2::after{background:#1ed2b4}
-.s3::after{background:#a078ff}
-.s4::after{background:#78c850}
-
-/* stories progress bar */
-.stories{position:absolute;top:8px;left:14px;right:14px;z-index:10;display:flex;gap:4px}
-.seg{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.18)}
-.seg.on{background:rgba(255,255,255,.85)}
-.seg.past{background:rgba(255,255,255,.5)}
+/* Stories progress bar */
+.stories{position:absolute;top:10px;left:14px;right:14px;z-index:20;display:flex;gap:5px}
+.seg{flex:1;height:2.5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;position:relative}
+.seg-fill{position:absolute;inset:0;border-radius:3px;transform:scaleX(0);transform-origin:left;transition:transform .44s cubic-bezier(.4,0,.2,1)}
+.seg.past .seg-fill{transform:scaleX(1);background:rgba(255,255,255,.5)}
+.seg.on .seg-fill{transform:scaleX(1);background:rgba(255,255,255,.9)}
 
 /* badge */
-.badge{position:absolute;top:20px;right:14px;z-index:10;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:20px}
+.badge{position:absolute;top:22px;right:14px;z-index:10;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:20px;transition:opacity .3s}
 .s0 .badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
 .s1 .badge{background:rgba(255,140,60,.18);color:#ff8c3c}
 .s2 .badge{background:rgba(30,210,180,.18);color:#1ed2b4}
 .s3 .badge{background:rgba(160,120,255,.18);color:#a078ff}
 .s4 .badge{background:rgba(120,200,80,.18);color:#78c850}
 
-/* scrollable content */
-.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:46px 22px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+/* accent line */
+.slide::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;z-index:5}
+.s0::after{background:rgba(255,255,255,.15)}
+.s1::after{background:#ff8c3c}
+.s2::after{background:#1ed2b4}
+.s3::after{background:#a078ff}
+.s4::after{background:#78c850}
+
+/* scrollable body */
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:48px 22px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .body::-webkit-scrollbar{display:none}
 
 /* bottom nav */
 .nav{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 20px;padding-bottom:max(env(safe-area-inset-bottom,14px),14px)}
-.nbtn{width:54px;height:54px;border-radius:50%;border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;user-select:none;transition:background .12s,transform .1s}
-.nbtn:active{background:rgba(255,255,255,.2);transform:scale(.91)}
-.nbtn[disabled]{opacity:.15;pointer-events:none}
-.dots{display:flex;gap:6px;align-items:center;flex:1;justify-content:center}
-.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.22);transition:all .28s}
-.dot.on{width:22px;border-radius:4px;background:rgba(255,255,255,.75)}
 
-/* ── typography ── */
-.logo{font-size:11px;letter-spacing:.25em;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;margin-bottom:30px}
-.h1{font-size:28px;font-weight:800;color:#fff;line-height:1.18;margin-bottom:8px;letter-spacing:-.01em}
-.sub{font-size:13px;color:rgba(255,255,255,.38);line-height:1.6;margin-bottom:24px}
+.nbtn{width:54px;height:54px;border-radius:50%;border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;user-select:none;position:relative;overflow:hidden;transition:border-color .2s,background .15s}
+.nbtn::after{content:'';position:absolute;inset:0;border-radius:50%;background:rgba(255,255,255,.0);transition:background .12s}
+.nbtn.tap::after{background:rgba(255,255,255,.18)}
+.nbtn[disabled]{opacity:.15;pointer-events:none}
+/* arrow bounce on tap */
+.nbtn .arr{display:inline-block;transition:transform .18s cubic-bezier(.4,0,.2,1)}
+.nbtn.tap .arr{transform:translateX(4px)}
+.nbtn.prev.tap .arr{transform:translateX(-4px)}
+
+.dots{display:flex;gap:6px;align-items:center;flex:1;justify-content:center}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.22);transition:all .32s cubic-bezier(.4,0,.2,1)}
+.dot.on{width:22px;border-radius:4px;background:rgba(255,255,255,.8)}
+
+/* ── cover typography ── */
+.logo{font-size:11px;letter-spacing:.25em;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;margin-bottom:28px}
+.h1{font-size:28px;font-weight:800;color:#fff;line-height:1.18;margin-bottom:8px}
+.sub{font-size:13px;color:rgba(255,255,255,.38);line-height:1.6;margin-bottom:22px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
-.mc{background:rgba(255,255,255,.06);border:0.5px solid rgba(255,255,255,.1);border-radius:14px;padding:11px 13px}
+.mc{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:14px;padding:11px 13px}
 .ml{font-size:10px;color:rgba(255,255,255,.28);margin-bottom:3px}
 .mv{font-size:13px;font-weight:700;color:#fff;line-height:1.3}
-.tbox{background:rgba(255,255,255,.08);border:0.5px solid rgba(255,255,255,.14);border-radius:16px;padding:15px 17px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+
+/* clickable total box */
+.tbox{background:rgba(255,255,255,.08);border:.5px solid rgba(255,255,255,.2);border-radius:16px;padding:15px 17px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;cursor:pointer;transition:background .18s,border-color .18s,transform .15s;position:relative;overflow:hidden}
+.tbox:active{transform:scale(.97);background:rgba(255,255,255,.13)}
+.tbox::after{content:'';position:absolute;inset:0;border-radius:16px;background:rgba(255,255,255,0);transition:background .15s}
+.tbox.tap::after{background:rgba(255,255,255,.08)}
 .tl{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:4px}
 .ta{font-size:26px;font-weight:800;color:#fff}
+.tbox-hint{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;display:flex;align-items:center;gap:4px}
+.tbox-hint span{font-size:14px}
 .hint{text-align:center;font-size:12px;color:rgba(255,255,255,.18);padding-top:4px}
 
+/* etap */
 .enum{font-size:10px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;margin-bottom:5px}
 .s1 .enum{color:#ff8c3c}.s2 .enum{color:#1ed2b4}.s3 .enum{color:#a078ff}.s4 .enum{color:#78c850}
 .etitle{font-size:26px;font-weight:800;color:#fff;line-height:1.18;margin-bottom:14px}
@@ -85,148 +100,173 @@ body{height:100%;overflow:hidden;background:#000;font-family:-apple-system,Blink
 .sr{display:flex;justify-content:space-between;padding:10px 0;border-bottom:.5px solid rgba(255,255,255,.07);font-size:14px}
 .sl2{color:rgba(255,255,255,.46)}
 .sv{color:#fff;font-weight:700}
+.sr.acc{border-bottom:none;margin-top:4px}
 .sr.acc .sl2{color:#78c850;font-weight:800;font-size:15px}
 .sr.acc .sv{color:#78c850;font-size:18px}
+
+/* breakdown rows — animated in */
+.brow{opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s}
+.brow.vis{opacity:1;transform:none}
+
 .foot{margin-top:22px;text-align:center;font-size:10px;color:rgba(255,255,255,.14);letter-spacing:.07em;padding-bottom:4px}
+
+/* slide-in content animation */
+.slide-content-wrap{opacity:0;transform:translateX(30px);transition:opacity .38s .06s,transform .38s .06s cubic-bezier(.4,0,.2,1)}
+.slide-content-wrap.in{opacity:1;transform:none}
+.slide-content-wrap.out-left{opacity:0;transform:translateX(-30px);transition:opacity .25s,transform .25s cubic-bezier(.4,0,.2,1)}
 </style>
 </head>
 <body>
 <div class="app">
 <div class="track" id="T">
 
-<!-- 0 cover -->
-<div class="slide s0">
+<!-- 0: Cover -->
+<div class="slide s0" data-i="0">
   <div class="stories" id="st0"></div>
   <div class="badge">Кошторис</div>
   <div class="body">
-    <div class="logo">SAMARSKYI</div>
-    <div class="h1">Комерційна<br>пропозиція</div>
-    <div class="sub">Будівельно-монтажні роботи<br>в комерційному приміщенні</div>
-    <div class="grid2">
-      <div class="mc"><div class="ml">Адреса</div><div class="mv" style="font-size:11px">вул. Юлії Здановської, 36А</div></div>
-      <div class="mc"><div class="ml">Дата</div><div class="mv">03.06.2026</div></div>
-      <div class="mc"><div class="ml">Площа</div><div class="mv">92,39 м²</div></div>
-      <div class="mc"><div class="ml">Етапів</div><div class="mv">4</div></div>
+    <div class="slide-content-wrap" id="cw0">
+      <div class="logo">SAMARSKYI</div>
+      <div class="h1">Комерційна<br>пропозиція</div>
+      <div class="sub">Будівельно-монтажні роботи<br>в комерційному приміщенні</div>
+      <div class="grid2">
+        <div class="mc"><div class="ml">Адреса</div><div class="mv" style="font-size:11px">вул. Юлії Здановської, 36А</div></div>
+        <div class="mc"><div class="ml">Дата</div><div class="mv">03.06.2026</div></div>
+        <div class="mc"><div class="ml">Площа</div><div class="mv">92,39 м²</div></div>
+        <div class="mc"><div class="ml">Етапів</div><div class="mv">4</div></div>
+      </div>
+      <div class="tbox" id="totalbox" onclick="tapTotal()">
+        <div>
+          <div class="tl">Загальна сума</div>
+          <div class="ta">103 946 грн</div>
+          <div class="tbox-hint"><span>→</span> як складається сума</div>
+        </div>
+        <div style="font-size:32px;color:rgba(255,255,255,.25);line-height:1">›</div>
+      </div>
+      <div class="hint">← проведіть пальцем →</div>
     </div>
-    <div class="tbox">
-      <div><div class="tl">Загальна сума</div><div class="ta">103 946 грн</div></div>
-      <div style="font-size:28px;color:rgba(255,255,255,.18)">›</div>
-    </div>
-    <div class="hint">← проведіть пальцем →</div>
   </div>
   <div class="nav">
-    <button class="nbtn" id="p0" onclick="go(C-1)" disabled>‹</button>
+    <button class="nbtn prev" id="p0" onclick="go(C-1,true)" disabled><span class="arr">‹</span></button>
     <div class="dots" id="d0"></div>
-    <button class="nbtn" onclick="go(C+1)">›</button>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
   </div>
 </div>
 
-<!-- 1 демонтаж -->
-<div class="slide s1">
+<!-- 1: Демонтаж -->
+<div class="slide s1" data-i="1">
   <div class="stories" id="st1"></div>
   <div class="badge">Етап 1</div>
   <div class="body">
-    <div class="enum">Демонтаж</div>
-    <div class="etitle">Підготовчі<br>роботи</div>
-    <div class="div"></div>
-    <div class="slabel">Роботи</div>
-    <div class="row"><div><div class="rn">Демонтаж плінтусу</div><div class="rd">84,9 м.п. × 50 грн</div></div><div class="rp">4 245 грн</div></div>
-    <div class="row"><div><div class="rn">Демонтаж / монтаж батарей</div><div class="rd">4 шт. × 600 грн</div></div><div class="rp">2 400 грн</div></div>
-    <div class="tbox2">
-      <div class="tr"><span>Роботи</span><span>6 645 грн</span></div>
-      <div class="tr"><span>Матеріали</span><span>0 грн</span></div>
-      <div class="tr"><span>Ведення об'єкту (8%)</span><span>532 грн</span></div>
-      <div class="tr big"><span>Разом</span><span>7 177 грн</span></div>
+    <div class="slide-content-wrap" id="cw1">
+      <div class="enum">Демонтаж</div>
+      <div class="etitle">Підготовчі<br>роботи</div>
+      <div class="div"></div>
+      <div class="slabel">Роботи</div>
+      <div class="row"><div><div class="rn">Демонтаж плінтусу</div><div class="rd">84,9 м.п. × 50 грн</div></div><div class="rp">4 245 грн</div></div>
+      <div class="row"><div><div class="rn">Демонтаж / монтаж батарей</div><div class="rd">4 шт. × 600 грн</div></div><div class="rp">2 400 грн</div></div>
+      <div class="tbox2">
+        <div class="tr"><span>Роботи</span><span>6 645 грн</span></div>
+        <div class="tr"><span>Матеріали</span><span>0 грн</span></div>
+        <div class="tr"><span>Ведення об'єкту (8%)</span><span>532 грн</span></div>
+        <div class="tr big"><span>Разом</span><span>7 177 грн</span></div>
+      </div>
     </div>
   </div>
   <div class="nav">
-    <button class="nbtn" onclick="go(C-1)">‹</button>
+    <button class="nbtn prev" onclick="go(C-1,true)"><span class="arr">‹</span></button>
     <div class="dots" id="d1"></div>
-    <button class="nbtn" onclick="go(C+1)">›</button>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
   </div>
 </div>
 
-<!-- 2 фарбування -->
-<div class="slide s2">
+<!-- 2: Фарбування -->
+<div class="slide s2" data-i="2">
   <div class="stories" id="st2"></div>
   <div class="badge">Етап 2</div>
   <div class="body">
-    <div class="enum">Фарбування</div>
-    <div class="etitle">Стіни та<br>стеля</div>
-    <div class="div"></div>
-    <div class="slabel">Роботи</div>
-    <div class="row"><div><div class="rn">Ремонт і підготовка стін</div><div class="rd">15 м² × 200 грн</div></div><div class="rp">3 000 грн</div></div>
-    <div class="row"><div><div class="rn">Ґрунтування стін</div><div class="rd">209 м² × 20 + 47 м.п. × 20 грн</div></div><div class="rp">5 120 грн</div></div>
-    <div class="row"><div><div class="rn">Фарбування стін</div><div class="rd">209 м² + 47 м.п. × 130 грн</div></div><div class="rp">33 280 грн</div></div>
-    <div class="row"><div><div class="rn">Акрилення примикань</div><div class="rd">23,5 м.п. × 80 грн</div></div><div class="rp">1 880 грн</div></div>
-    <div class="row"><div><div class="rn">Ґрунтування стелі</div><div class="rd">92,39 м² × 20 грн</div></div><div class="rp">1 848 грн</div></div>
-    <div class="row"><div><div class="rn">Фарбування стелі</div><div class="rd">92,39 м² × 130 грн</div></div><div class="rp">12 011 грн</div></div>
-    <div class="slabel">Матеріали</div>
-    <div class="row"><div><div class="rn">Фарба Caparol Amphibolin</div><div class="rd">5 шт. × 2 500 грн</div></div><div class="rp">12 500 грн</div></div>
-    <div class="row"><div><div class="rn">Ґрунтовка Ceresit CT 17</div><div class="rd">5 шт. × 770 грн</div></div><div class="rp">3 850 грн</div></div>
-    <div class="row"><div><div class="rn">Малярна стрічка HPX 4800</div><div class="rd">4 шт. × 420 грн</div></div><div class="rp">1 680 грн</div></div>
-    <div class="row"><div><div class="rn">Плівка захисна, валики, пензлі, інструмент</div><div class="rd">дрібний інструмент</div></div><div class="rp">1 896 грн</div></div>
-    <div class="tbox2">
-      <div class="tr"><span>Роботи</span><span>57 139 грн</span></div>
-      <div class="tr"><span>Матеріали</span><span>19 926 грн</span></div>
-      <div class="tr"><span>Ведення об'єкту (8%)</span><span>6 165 грн</span></div>
-      <div class="tr big"><span>Разом</span><span>83 230 грн</span></div>
+    <div class="slide-content-wrap" id="cw2">
+      <div class="enum">Фарбування</div>
+      <div class="etitle">Стіни та<br>стеля</div>
+      <div class="div"></div>
+      <div class="slabel">Роботи</div>
+      <div class="row"><div><div class="rn">Ремонт і підготовка стін</div><div class="rd">15 м² × 200 грн</div></div><div class="rp">3 000 грн</div></div>
+      <div class="row"><div><div class="rn">Ґрунтування стін</div><div class="rd">209 м² × 20 + 47 м.п. × 20 грн</div></div><div class="rp">5 120 грн</div></div>
+      <div class="row"><div><div class="rn">Фарбування стін</div><div class="rd">209 м² + 47 м.п. × 130 грн</div></div><div class="rp">33 280 грн</div></div>
+      <div class="row"><div><div class="rn">Акрилення примикань</div><div class="rd">23,5 м.п. × 80 грн</div></div><div class="rp">1 880 грн</div></div>
+      <div class="row"><div><div class="rn">Ґрунтування стелі</div><div class="rd">92,39 м² × 20 грн</div></div><div class="rp">1 848 грн</div></div>
+      <div class="row"><div><div class="rn">Фарбування стелі</div><div class="rd">92,39 м² × 130 грн</div></div><div class="rp">12 011 грн</div></div>
+      <div class="slabel">Матеріали</div>
+      <div class="row"><div><div class="rn">Фарба Caparol Amphibolin</div><div class="rd">5 шт. × 2 500 грн</div></div><div class="rp">12 500 грн</div></div>
+      <div class="row"><div><div class="rn">Ґрунтовка Ceresit CT 17</div><div class="rd">5 шт. × 770 грн</div></div><div class="rp">3 850 грн</div></div>
+      <div class="row"><div><div class="rn">Малярна стрічка HPX 4800</div><div class="rd">4 шт. × 420 грн</div></div><div class="rp">1 680 грн</div></div>
+      <div class="row"><div><div class="rn">Плівка, валики, пензлі, інструмент</div><div class="rd">дрібний інструмент</div></div><div class="rp">1 896 грн</div></div>
+      <div class="tbox2">
+        <div class="tr"><span>Роботи</span><span>57 139 грн</span></div>
+        <div class="tr"><span>Матеріали</span><span>19 926 грн</span></div>
+        <div class="tr"><span>Ведення об'єкту (8%)</span><span>6 165 грн</span></div>
+        <div class="tr big"><span>Разом</span><span>83 230 грн</span></div>
+      </div>
     </div>
   </div>
   <div class="nav">
-    <button class="nbtn" onclick="go(C-1)">‹</button>
+    <button class="nbtn prev" onclick="go(C-1,true)"><span class="arr">‹</span></button>
     <div class="dots" id="d2"></div>
-    <button class="nbtn" onclick="go(C+1)">›</button>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
   </div>
 </div>
 
-<!-- 3 інші -->
-<div class="slide s3">
+<!-- 3: Інші роботи -->
+<div class="slide s3" data-i="3">
   <div class="stories" id="st3"></div>
   <div class="badge">Етап 3</div>
   <div class="body">
-    <div class="enum">Інші роботи</div>
-    <div class="etitle">Фінішні<br>роботи</div>
-    <div class="div"></div>
-    <div class="slabel">Роботи</div>
-    <div class="row"><div><div class="rn">Монтаж плінтусу</div><div class="rd">84,9 м.п. × 130 грн</div></div><div class="rp">11 037 грн</div></div>
-    <div class="row"><div><div class="rn">Монтаж дверного порогу</div><div class="rd">3 шт. × 500 грн</div></div><div class="rp">1 500 грн</div></div>
-    <div class="tbox2">
-      <div class="tr"><span>Роботи</span><span>12 537 грн</span></div>
-      <div class="tr"><span>Матеріали</span><span>0 грн</span></div>
-      <div class="tr"><span>Ведення об'єкту (8%)</span><span>1 003 грн</span></div>
-      <div class="tr big"><span>Разом</span><span>13 540 грн</span></div>
+    <div class="slide-content-wrap" id="cw3">
+      <div class="enum">Інші роботи</div>
+      <div class="etitle">Фінішні<br>роботи</div>
+      <div class="div"></div>
+      <div class="slabel">Роботи</div>
+      <div class="row"><div><div class="rn">Монтаж плінтусу</div><div class="rd">84,9 м.п. × 130 грн</div></div><div class="rp">11 037 грн</div></div>
+      <div class="row"><div><div class="rn">Монтаж дверного порогу</div><div class="rd">3 шт. × 500 грн</div></div><div class="rp">1 500 грн</div></div>
+      <div class="tbox2">
+        <div class="tr"><span>Роботи</span><span>12 537 грн</span></div>
+        <div class="tr"><span>Матеріали</span><span>0 грн</span></div>
+        <div class="tr"><span>Ведення об'єкту (8%)</span><span>1 003 грн</span></div>
+        <div class="tr big"><span>Разом</span><span>13 540 грн</span></div>
+      </div>
     </div>
   </div>
   <div class="nav">
-    <button class="nbtn" onclick="go(C-1)">‹</button>
+    <button class="nbtn prev" onclick="go(C-1,true)"><span class="arr">‹</span></button>
     <div class="dots" id="d3"></div>
-    <button class="nbtn" onclick="go(C+1)">›</button>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
   </div>
 </div>
 
-<!-- 4 підсумок -->
-<div class="slide s4">
+<!-- 4: Підсумок -->
+<div class="slide s4" data-i="4">
   <div class="stories" id="st4"></div>
   <div class="badge">Підсумок</div>
   <div class="body">
-    <div class="enum">Загалом по кошторису</div>
-    <div class="etitle">Фінальна<br>сума</div>
-    <div class="stotal">103 946 грн</div>
-    <div class="sr"><span class="sl2">Демонтаж</span><span class="sv">7 177 грн</span></div>
-    <div class="sr"><span class="sl2">Фарбування</span><span class="sv">83 230 грн</span></div>
-    <div class="sr"><span class="sl2">Фінішні роботи</span><span class="sv">13 540 грн</span></div>
-    <div class="div" style="margin:14px 0"></div>
-    <div class="sr"><span class="sl2">Вартість робіт</span><span class="sv">76 321 грн</span></div>
-    <div class="sr"><span class="sl2">Матеріали</span><span class="sv">19 926 грн</span></div>
-    <div class="sr"><span class="sl2">Адмін / транспорт / виробництво</span><span class="sv">7 700 грн</span></div>
-    <div class="sr acc" style="border-bottom:none;margin-top:4px"><span class="sl2">Разом до сплати</span><span class="sv">103 946 грн</span></div>
-    <div class="foot">SAMARSKYI · вул. Юлії Здановської, 36А · 03.06.2026</div>
+    <div class="slide-content-wrap" id="cw4">
+      <div class="enum">Загалом по кошторису</div>
+      <div class="etitle">Фінальна<br>сума</div>
+      <div class="stotal">103 946 грн</div>
+      <div class="brow sr" id="br0"><span class="sl2">Демонтаж</span><span class="sv">7 177 грн</span></div>
+      <div class="brow sr" id="br1"><span class="sl2">Фарбування</span><span class="sv">83 230 грн</span></div>
+      <div class="brow sr" id="br2"><span class="sl2">Фінішні роботи</span><span class="sv">13 540 грн</span></div>
+      <div class="brow div" id="br3" style="margin:14px 0"></div>
+      <div class="brow sr" id="br4"><span class="sl2">Вартість робіт</span><span class="sv">76 321 грн</span></div>
+      <div class="brow sr" id="br5"><span class="sl2">Матеріали</span><span class="sv">19 926 грн</span></div>
+      <div class="brow sr" id="br6"><span class="sl2">Адмін / транспорт / виробництво</span><span class="sv">7 700 грн</span></div>
+      <div class="brow sr acc" id="br7"><span class="sl2">Разом до сплати</span><span class="sv">103 946 грн</span></div>
+      <div class="foot">SAMARSKYI · вул. Юлії Здановської, 36А · 03.06.2026</div>
+    </div>
   </div>
   <div class="nav">
-    <button class="nbtn" onclick="go(C-1)">‹</button>
+    <button class="nbtn prev" onclick="go(C-1,true)"><span class="arr">‹</span></button>
     <div class="dots" id="d4"></div>
-    <button class="nbtn" disabled style="opacity:.15">›</button>
+    <button class="nbtn" disabled><span class="arr">›</span></button>
   </div>
 </div>
 
@@ -238,21 +278,90 @@ const N=5;
 let C=0;
 const track=document.getElementById('T');
 
-function render(){
-  track.style.transform='translateX(-'+(C*100)+'vw)';
+function render(instant){
+  // track
+  if(instant){
+    track.style.transition='none';
+    track.style.transform='translateX(-'+(C*100)+'vw)';
+    // force reflow then restore transition
+    track.offsetHeight;
+    track.style.transition='';
+  } else {
+    track.style.transform='translateX(-'+(C*100)+'vw)';
+  }
+
   for(let i=0;i<N;i++){
     // dots
     const d=document.getElementById('d'+i);
-    if(d){d.innerHTML='';for(let j=0;j<N;j++){const x=document.createElement('div');x.className='dot'+(j===C?' on':'');d.appendChild(x);}}
-    // stories bar
+    if(d){
+      d.innerHTML='';
+      for(let j=0;j<N;j++){
+        const x=document.createElement('div');
+        x.className='dot'+(j===C?' on':'');
+        d.appendChild(x);
+      }
+    }
+    // stories bar — each seg gets its fill animated
     const s=document.getElementById('st'+i);
-    if(s){s.innerHTML='';for(let j=0;j<N;j++){const x=document.createElement('div');x.className='seg'+(j<C?' past':j===C?' on':'');s.appendChild(x);}}
+    if(s){
+      s.innerHTML='';
+      for(let j=0;j<N;j++){
+        const seg=document.createElement('div');
+        seg.className='seg'+(j<C?' past':j===C?' on':'');
+        const fill=document.createElement('div');
+        fill.className='seg-fill';
+        seg.appendChild(fill);
+        s.appendChild(seg);
+      }
+    }
+  }
+
+  // content slide-in animation for current slide
+  const cw=document.getElementById('cw'+C);
+  if(cw){
+    cw.classList.remove('in','out-left');
+    void cw.offsetWidth;
+    setTimeout(()=>cw.classList.add('in'),20);
+  }
+
+  // stagger breakdown rows on slide 4
+  if(C===4){
+    for(let i=0;i<=7;i++){
+      const br=document.getElementById('br'+i);
+      if(br){
+        br.classList.remove('vis');
+        setTimeout(()=>br.classList.add('vis'), 180 + i*70);
+      }
+    }
   }
 }
 
-function go(idx){if(idx<0||idx>=N)return;C=idx;render();}
+function tapBtn(btn){
+  btn.classList.add('tap');
+  setTimeout(()=>btn.classList.remove('tap'),220);
+}
 
-// Pointer-based swipe — works in Telegram WebView
+function go(idx, isPrev){
+  if(idx<0||idx>=N)return;
+  // animate arrow that was clicked
+  const btns=document.querySelectorAll('.nbtn');
+  btns.forEach(b=>{
+    if((isPrev&&b.classList.contains('prev'))||((!isPrev)&&!b.classList.contains('prev'))){
+      tapBtn(b);
+    }
+  });
+  C=idx;
+  render(false);
+}
+
+function tapTotal(){
+  const box=document.getElementById('totalbox');
+  box.classList.add('tap');
+  setTimeout(()=>box.classList.remove('tap'),300);
+  setTimeout(()=>go(4),180);
+}
+
+// Pointer-based swipe
 let px=0,py=0,down=false,moved=false,scrolling=false;
 const app=document.querySelector('.app');
 
@@ -268,33 +377,32 @@ app.addEventListener('pointermove',e=>{
     if(Math.abs(dx)>6)moved=true;
   }
   if(moved&&!scrolling){
-    const base=C*100;
     track.style.transition='none';
-    track.style.transform='translateX(calc(-'+base+'vw + '+dx+'px))';
+    track.style.transform='translateX(calc(-'+(C*100)+'vw + '+dx+'px))';
   }
 },{passive:true});
 
 function endSwipe(ex){
   if(!down)return;
   down=false;
-  if(!moved||scrolling){track.style.transition='';render();return;}
+  if(!moved||scrolling){track.style.transition='';render(false);return;}
   const dx=ex-px;
-  track.style.transition='transform .42s cubic-bezier(.4,0,.2,1)';
-  if(dx<-48)go(C+1);
-  else if(dx>48)go(C-1);
-  else render();
+  track.style.transition='transform .44s cubic-bezier(.4,0,.2,1)';
+  if(dx<-48)go(C+1,false);
+  else if(dx>48)go(C-1,true);
+  else render(false);
 }
 
 app.addEventListener('pointerup',e=>endSwipe(e.clientX),{passive:true});
 app.addEventListener('pointercancel',e=>endSwipe(e.clientX),{passive:true});
 
-// keyboard
 document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight')go(C+1);
-  if(e.key==='ArrowLeft')go(C-1);
+  if(e.key==='ArrowRight')go(C+1,false);
+  if(e.key==='ArrowLeft')go(C-1,true);
 });
 
-render();
+// init
+render(true);
 </script>
 </body>
 </html>
