@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1b2a">
+<title>Кошторис · SAMARSKYI · ЖК Галактика</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#000;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif}
+.app{position:fixed;inset:0;overflow:hidden;touch-action:none}
+.track{display:flex;height:100%;will-change:transform;transition:transform .44s cubic-bezier(.4,0,.2,1)}
+.slide{min-width:100vw;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* backgrounds */
+.s0{background:#0d1b2a}
+.s1{background:#1c0d00}
+.s2{background:#001a12}
+.s3{background:#0f0a1c}
+.s4{background:#001418}
+.s5{background:#0a1000}
+.s6{background:#180010}
+.s7{background:#0a0e18}
+.s8{background:#180c00}
+.s9{background:#001018}
+.s10{background:#181200}
+.s11{background:#0d0018}
+.s12{background:#001810}
+.s13{background:#091009}
+
+/* accent top line */
+.slide::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;z-index:5}
+.s0::after{background:rgba(255,255,255,.15)}
+.s1::after{background:#ff8c3c}
+.s2::after{background:#1ed2b4}
+.s3::after{background:#a078ff}
+.s4::after{background:#00c8e0}
+.s5::after{background:#78c850}
+.s6::after{background:#ff5080}
+.s7::after{background:#6090ff}
+.s8::after{background:#ffb830}
+.s9::after{background:#30d8c0}
+.s10::after{background:#e0b030}
+.s11::after{background:#c050ff}
+.s12::after{background:#40e090}
+.s13::after{background:#78c850}
+
+/* stories bar */
+.stories{position:absolute;top:10px;left:14px;right:14px;z-index:20;display:flex;gap:3px}
+.seg{flex:1;height:2px;border-radius:2px;background:rgba(255,255,255,.15);overflow:hidden;position:relative}
+.seg-fill{position:absolute;inset:0;border-radius:2px;transform:scaleX(0);transform-origin:left;transition:transform .44s cubic-bezier(.4,0,.2,1)}
+.seg.past .seg-fill{transform:scaleX(1);background:rgba(255,255,255,.45)}
+.seg.on .seg-fill{transform:scaleX(1);background:rgba(255,255,255,.9)}
+
+/* badge */
+.badge{position:absolute;top:20px;right:14px;z-index:10;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:20px}
+.s0 .badge{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
+.s1 .badge{background:rgba(255,140,60,.18);color:#ff8c3c}
+.s2 .badge{background:rgba(30,210,180,.18);color:#1ed2b4}
+.s3 .badge{background:rgba(160,120,255,.18);color:#a078ff}
+.s4 .badge{background:rgba(0,200,224,.18);color:#00c8e0}
+.s5 .badge{background:rgba(120,200,80,.18);color:#78c850}
+.s6 .badge{background:rgba(255,80,128,.18);color:#ff5080}
+.s7 .badge{background:rgba(96,144,255,.18);color:#6090ff}
+.s8 .badge{background:rgba(255,184,48,.18);color:#ffb830}
+.s9 .badge{background:rgba(48,216,192,.18);color:#30d8c0}
+.s10 .badge{background:rgba(224,176,48,.18);color:#e0b030}
+.s11 .badge{background:rgba(192,80,255,.18);color:#c050ff}
+.s12 .badge{background:rgba(64,224,144,.18);color:#40e090}
+.s13 .badge{background:rgba(120,200,80,.18);color:#78c850}
+
+/* body */
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:46px 22px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+
+/* nav */
+.nav{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 20px;padding-bottom:max(env(safe-area-inset-bottom,12px),12px)}
+.nbtn{width:52px;height:52px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;user-select:none;transition:background .12s,transform .12s}
+.nbtn:active,.nbtn.tap{background:rgba(255,255,255,.2);transform:scale(.9)}
+.nbtn .arr{display:inline-block;transition:transform .18s}
+.nbtn.tap.prev .arr{transform:translateX(-4px)}
+.nbtn.tap:not(.prev) .arr{transform:translateX(4px)}
+.nbtn[disabled]{opacity:.15;pointer-events:none}
+.dots{display:flex;gap:4px;align-items:center;flex:1;justify-content:center;flex-wrap:wrap}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.dot.on{width:18px;border-radius:3px;background:rgba(255,255,255,.8)}
+
+/* cover */
+.logo{font-size:11px;letter-spacing:.25em;font-weight:700;color:rgba(255,255,255,.28);text-transform:uppercase;margin-bottom:24px}
+.h1{font-size:26px;font-weight:800;color:#fff;line-height:1.18;margin-bottom:8px}
+.sub{font-size:13px;color:rgba(255,255,255,.38);line-height:1.6;margin-bottom:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.mc{background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.1);border-radius:14px;padding:10px 12px}
+.ml{font-size:10px;color:rgba(255,255,255,.28);margin-bottom:3px}
+.mv{font-size:13px;font-weight:700;color:#fff;line-height:1.3}
+.tbox{background:rgba(255,255,255,.08);border:.5px solid rgba(255,255,255,.2);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;cursor:pointer;transition:background .15s,transform .12s;position:relative;overflow:hidden}
+.tbox:active,.tbox.tap{background:rgba(255,255,255,.14);transform:scale(.98)}
+.tl{font-size:12px;color:rgba(255,255,255,.38);margin-bottom:4px}
+.ta{font-size:24px;font-weight:800;color:#fff}
+.tbox-hint{font-size:11px;color:rgba(255,255,255,.32);margin-top:4px}
+.hint{text-align:center;font-size:12px;color:rgba(255,255,255,.18);padding-top:2px}
+
+/* etap */
+.ecw{opacity:0;transform:translateX(28px);transition:opacity .36s .05s,transform .36s .05s cubic-bezier(.4,0,.2,1)}
+.ecw.in{opacity:1;transform:none}
+.enum{font-size:10px;letter-spacing:.12em;font-weight:700;text-transform:uppercase;margin-bottom:5px}
+.s1 .enum{color:#ff8c3c}.s2 .enum{color:#1ed2b4}.s3 .enum{color:#a078ff}.s4 .enum{color:#00c8e0}
+.s5 .enum{color:#78c850}.s6 .enum{color:#ff5080}.s7 .enum{color:#6090ff}.s8 .enum{color:#ffb830}
+.s9 .enum{color:#30d8c0}.s10 .enum{color:#e0b030}.s11 .enum{color:#c050ff}.s12 .enum{color:#40e090}
+.etitle{font-size:24px;font-weight:800;color:#fff;line-height:1.18;margin-bottom:12px}
+.div{height:.5px;background:rgba(255,255,255,.1);margin:2px 0 10px}
+.slabel{font-size:10px;letter-spacing:.08em;color:rgba(255,255,255,.28);text-transform:uppercase;margin:10px 0 4px}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:.5px solid rgba(255,255,255,.06)}
+.rn{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.4;flex:1}
+.rd{font-size:11px;color:rgba(255,255,255,.28);margin-top:2px}
+.rp{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;padding-top:1px}
+.tbox2{background:rgba(255,255,255,.06);border-radius:14px;padding:10px 13px;margin-top:12px}
+.tr{display:flex;justify-content:space-between;font-size:12.5px;color:rgba(255,255,255,.4);padding:3px 0}
+.tr.big{margin-top:7px;padding-top:7px;border-top:.5px solid rgba(255,255,255,.1);font-size:15px;font-weight:800;color:#fff}
+.s1 .tr.big span:last-child{color:#ff8c3c}
+.s2 .tr.big span:last-child{color:#1ed2b4}
+.s3 .tr.big span:last-child{color:#a078ff}
+.s4 .tr.big span:last-child{color:#00c8e0}
+.s5 .tr.big span:last-child{color:#78c850}
+.s6 .tr.big span:last-child{color:#ff5080}
+.s7 .tr.big span:last-child{color:#6090ff}
+.s8 .tr.big span:last-child{color:#ffb830}
+.s9 .tr.big span:last-child{color:#30d8c0}
+.s10 .tr.big span:last-child{color:#e0b030}
+.s11 .tr.big span:last-child{color:#c050ff}
+.s12 .tr.big span:last-child{color:#40e090}
+
+/* summary */
+.stotal{font-size:32px;font-weight:900;color:#fff;margin:4px 0 16px;letter-spacing:-.02em}
+.sr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:.5px solid rgba(255,255,255,.07);font-size:13px}
+.sl2{color:rgba(255,255,255,.46)}
+.sv{color:#fff;font-weight:700}
+.brow{opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s}
+.brow.vis{opacity:1;transform:none}
+.sr.acc{border-bottom:none;margin-top:4px}
+.sr.acc .sl2{color:#78c850;font-weight:800;font-size:14px}
+.sr.acc .sv{color:#78c850;font-size:17px}
+.foot{margin-top:18px;text-align:center;font-size:10px;color:rgba(255,255,255,.14);letter-spacing:.07em;padding-bottom:4px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="track" id="T">
+
+<!-- 0: Cover -->
+<div class="slide s0">
+  <div class="stories" id="st0"></div>
+  <div class="badge">Кошторис</div>
+  <div class="body">
+    <div class="ecw in" id="cw0">
+      <div class="logo">SAMARSKYI</div>
+      <div class="h1">Комерційна<br>пропозиція</div>
+      <div class="sub">Будівельно-монтажні роботи<br>в квартирі · ЖК Галактика</div>
+      <div class="grid2">
+        <div class="mc"><div class="ml">Адреса</div><div class="mv" style="font-size:11px">вул. Є. Сверстюка, 6</div></div>
+        <div class="mc"><div class="ml">Дата</div><div class="mv">19.07.2026</div></div>
+        <div class="mc"><div class="ml">Площа</div><div class="mv">73,8 м²</div></div>
+        <div class="mc"><div class="ml">Етапів</div><div class="mv">12</div></div>
+      </div>
+      <div class="tbox" onclick="tapTotal()">
+        <div>
+          <div class="tl">Загальна сума</div>
+          <div class="ta">1 515 591 грн</div>
+          <div class="tbox-hint">→ як складається сума</div>
+        </div>
+        <div style="font-size:30px;color:rgba(255,255,255,.2)">›</div>
+      </div>
+      <div class="hint">← проведіть пальцем →</div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)" disabled><span class="arr">‹</span></button>
+    <div class="dots" id="d0"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 1: Демонтаж -->
+<div class="slide s1">
+  <div class="stories" id="st1"></div><div class="badge">Етап 1</div>
+  <div class="body"><div class="ecw" id="cw1">
+    <div class="enum">Демонтаж</div>
+    <div class="etitle">Підготовчі<br>роботи</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Демонтаж перегородок</div><div class="rd">4,25 м² × 350 грн</div></div><div class="rp">1 488 грн</div></div>
+    <div class="row"><div><div class="rn">Демонтаж з/б перемички</div><div class="rd">1 шт. × 500 грн</div></div><div class="rp">500 грн</div></div>
+    <div class="row"><div><div class="rn">Різ перегородок двосторонній</div><div class="rd">8,1 м.п. × 210 грн</div></div><div class="rp">1 701 грн</div></div>
+    <div class="row"><div><div class="rn">Демонтаж балконного блоку</div><div class="rd">2 шт. × 2 500 грн</div></div><div class="rp">5 000 грн</div></div>
+    <div class="row"><div><div class="rn">Демонтаж радіаторів опалення</div><div class="rd">3 шт. × 500 грн</div></div><div class="rp">1 500 грн</div></div>
+    <div class="row"><div><div class="rn">Зміщення дверного отвору</div><div class="rd">1 шт. × 3 000 грн</div></div><div class="rp">3 000 грн</div></div>
+    <div class="row"><div><div class="rn">Прибирання та фасування сміття</div><div class="rd">255 шт. × 25 грн</div></div><div class="rp">6 375 грн</div></div>
+    <div class="row"><div><div class="rn">Виніс сміття та навантаження</div><div class="rd">255 шт./пов. × 35 грн</div></div><div class="rp">8 925 грн</div></div>
+    <div class="row"><div><div class="rn">Виніс балконного блоку</div><div class="rd">2 шт. × 2 000 грн</div></div><div class="rp">4 000 грн</div></div>
+    <div class="row"><div><div class="rn">Вивіз сміття (Бус)</div><div class="rd">4 компл. × 3 000 грн</div></div><div class="rp">12 000 грн</div></div>
+    <div class="row"><div><div class="rn">Підготовчі роботи</div><div class="rd">1 компл. × 4 000 грн</div></div><div class="rp">4 000 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>48 489 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>10 456 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>4 716 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>63 660 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d1"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 2: Кондиціювання -->
+<div class="slide s2">
+  <div class="stories" id="st2"></div><div class="badge">Етап К</div>
+  <div class="body"><div class="ecw" id="cw2">
+    <div class="enum">Кондиціювання</div>
+    <div class="etitle">Влаштування<br>трас</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Стандартний монтаж фреонової магістралі</div><div class="rd">3 шт. × 4 500 грн</div></div><div class="rp">13 500 грн</div></div>
+    <div class="row"><div><div class="rn">Додатковий метр фреонової магістралі</div><div class="rd">22,5 м.п. × 850 грн</div></div><div class="rp">19 125 грн</div></div>
+    <div class="row"><div><div class="rn">Різка штроби під магістраль фреонову</div><div class="rd">11,3 м.п. × 450 грн</div></div><div class="rp">5 085 грн</div></div>
+    <div class="row"><div><div class="rn">Додаткові отвори</div><div class="rd">4 шт. × 250 грн</div></div><div class="rp">1 000 грн</div></div>
+    <div class="row"><div><div class="rn">Різка штроби під дренажну магістраль</div><div class="rd">12,7 м.п. × 280 грн</div></div><div class="rp">3 556 грн</div></div>
+    <div class="row"><div><div class="rn">Підключення дренажу до каналізації</div><div class="rd">2 шт. × 450 грн</div></div><div class="rp">900 грн</div></div>
+    <div class="row"><div><div class="rn">Додаткова дренажна труба з монтажем</div><div class="rd">4,5 м.п. × 250 грн</div></div><div class="rp">1 125 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>44 291 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>0 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>3 543 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>47 834 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d2"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 3: Штукатурка -->
+<div class="slide s3">
+  <div class="stories" id="st3"></div><div class="badge">Етап 2</div>
+  <div class="body"><div class="ecw" id="cw3">
+    <div class="enum">Монтаж / Штукатурка</div>
+    <div class="etitle">Стіни та<br>відкоси</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Ґрунтування стін під склосітку</div><div class="rd">53 м.п. × 35 грн</div></div><div class="rp">1 855 грн</div></div>
+    <div class="row"><div><div class="rn">Армування склосіткою</div><div class="rd">53 м.п. × 180 грн</div></div><div class="rp">9 540 грн</div></div>
+    <div class="row"><div><div class="rn">Ґрунтування стін та відкосів</div><div class="rd">127,86 м² × 35 грн</div></div><div class="rp">4 475 грн</div></div>
+    <div class="row"><div><div class="rn">Бетоноконтакт</div><div class="rd">49,38 м² × 80 грн</div></div><div class="rp">3 950 грн</div></div>
+    <div class="row"><div><div class="rn">Штукатурка гіпсова по маяках</div><div class="rd">157,45 м² × 380 грн</div></div><div class="rp">59 831 грн</div></div>
+    <div class="row"><div><div class="rn">Штукатурка цементно-піщана</div><div class="rd">19,8 м² × 380 грн</div></div><div class="rp">7 524 грн</div></div>
+    <div class="row"><div><div class="rn">Закладання кутника штукатурного</div><div class="rd">39,96 м.п. × 100 грн</div></div><div class="rp">3 996 грн</div></div>
+    <div class="row"><div><div class="rn">Виведення кутів 90° під вбудовані меблі</div><div class="rd">15 шт. × 700 грн</div></div><div class="rp">10 500 грн</div></div>
+    <div class="slabel">Матеріали (вибірка)</div>
+    <div class="row"><div><div class="rn">Суміш Knauf МП 75</div><div class="rd">98 шт. × 360 грн</div></div><div class="rp">35 280 грн</div></div>
+    <div class="row"><div><div class="rn">Ґрунтовка Knauf Betokontakt 5 кг</div><div class="rd">4 шт. × 476 грн</div></div><div class="rp">1 904 грн</div></div>
+    <div class="row"><div><div class="rn">Цементна суміш Siltek PM-11</div><div class="rd">25 шт. × 180 грн</div></div><div class="rp">4 500 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>122 037 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>53 283 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>14 026 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>189 346 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d3"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 4: Водопостачання -->
+<div class="slide s4">
+  <div class="stories" id="st4"></div><div class="badge">Етап 3</div>
+  <div class="body"><div class="ecw" id="cw4">
+    <div class="enum">Водопостачання та опалення</div>
+    <div class="etitle">Сантехніка<br>чорнова</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Монтаж виводів холодної води</div><div class="rd">13 точ. × 800 грн</div></div><div class="rp">10 400 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж виводів гарячої води</div><div class="rd">5 точ. × 800 грн</div></div><div class="rp">4 000 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж виводів каналізації</div><div class="rd">7 точ. × 800 грн</div></div><div class="rp">5 600 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж інсталяції</div><div class="rd">1 шт. × 2 300 грн</div></div><div class="rp">2 300 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж вбудованих частин (душ, змішувач, гіг. душ)</div><div class="rd">3 шт. × ≈2 400 грн</div></div><div class="rp">6 900 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж фільтрів та редукторів</div><div class="rd">4 шт. × ≈1 500 грн</div></div><div class="rp">6 000 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж радіаторів + обв'язка</div><div class="rd">3 шт. × 2 800 грн</div></div><div class="rp">8 400 грн</div></div>
+    <div class="row"><div><div class="rn">Гідравлічне випробування</div><div class="rd">1 компл.</div></div><div class="rp">3 850 грн</div></div>
+    <div class="slabel">Матеріали</div>
+    <div class="row"><div><div class="rn">Чорнова сантехніка (орієнтовно)</div><div class="rd">1 компл.</div></div><div class="rp">55 000 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>67 590 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>55 000 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>9 807 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>132 397 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d4"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 5: Електрика -->
+<div class="slide s5">
+  <div class="stories" id="st5"></div><div class="badge">Етап 4</div>
+  <div class="body"><div class="ecw" id="cw5">
+    <div class="enum">Електромонтажні роботи</div>
+    <div class="etitle">Чорнова<br>електрика</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Укладання кабелю</div><div class="rd">1 600 м.п. × 48 грн</div></div><div class="rp">76 800 грн</div></div>
+    <div class="row"><div><div class="rn">Розведення інтернет мережі</div><div class="rd">54 м.п. × 42 грн</div></div><div class="rp">2 268 грн</div></div>
+    <div class="row"><div><div class="rn">Вибивання отворів для підрозетників</div><div class="rd">71+21 шт. × 200–250 грн</div></div><div class="rp">19 450 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж щита + виводи + комутація</div><div class="rd">36 вив. × 440 грн</div></div><div class="rp">17 840 грн</div></div>
+    <div class="row"><div><div class="rn">Комутація розподільчих коробок</div><div class="rd">18 шт. × 410 грн</div></div><div class="rp">7 380 грн</div></div>
+    <div class="slabel">Матеріали (вибірка)</div>
+    <div class="row"><div><div class="rn">ВВГ нгд 3×2,5</div><div class="rd">700 м × 68 грн</div></div><div class="rp">47 600 грн</div></div>
+    <div class="row"><div><div class="rn">ВВГ нгд 3×1,5</div><div class="rd">550 м × 47 грн</div></div><div class="rp">25 850 грн</div></div>
+    <div class="row"><div><div class="rn">Щит Hager Volta 36 мод.</div><div class="rd">1+1 шт.</div></div><div class="rp">6 276 грн</div></div>
+    <div class="row"><div><div class="rn">Автомати, ПЗВ, реле напруги</div><div class="rd">комплект</div></div><div class="rp">15 162 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>133 360 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>123 332 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>20 535 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>277 227 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d5"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 6: Стяжка -->
+<div class="slide s6">
+  <div class="stories" id="st6"></div><div class="badge">Етап 5</div>
+  <div class="body"><div class="ecw" id="cw6">
+    <div class="enum">Стяжка</div>
+    <div class="etitle">Підготовка<br>підлоги</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Ґрунтування підлоги</div><div class="rd">4,49 м² × 35 грн</div></div><div class="rp">157 грн</div></div>
+    <div class="row"><div><div class="rn">Влаштування пінополістиролу</div><div class="rd">4,49 м² × 80 грн</div></div><div class="rp">359 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж стяжки до 60 мм</div><div class="rd">4,49 м² × 500 грн</div></div><div class="rp">2 245 грн</div></div>
+    <div class="row"><div><div class="rn">Армування стяжки</div><div class="rd">4,49 м² × 80 грн</div></div><div class="rp">359 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>3 345 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>6 883 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>818 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>11 046 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d6"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 7: ГКЛ -->
+<div class="slide s7">
+  <div class="stories" id="st7"></div><div class="badge">Етап 6</div>
+  <div class="body"><div class="ecw" id="cw7">
+    <div class="enum">ГКЛ конструкції</div>
+    <div class="etitle">Гіпсокартон<br>та зашивання</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Зашивання стін гіпсокартоном</div><div class="rd">16,04 м² × 850 грн</div></div><div class="rp">13 634 грн</div></div>
+    <div class="row"><div><div class="rn">Зашивання стін гіпсокартоном</div><div class="rd">27,26 м.п. × 800 грн</div></div><div class="rp">21 808 грн</div></div>
+    <div class="row"><div><div class="rn">Зашивання каналізаційного стояка ГК</div><div class="rd">5,6 м.п. × 800 грн</div></div><div class="rp">4 480 грн</div></div>
+    <div class="row"><div><div class="rn">Шумоізоляція стояка + мін. вата</div><div class="rd">5,6 м.п. × 560 грн</div></div><div class="rp">3 136 грн</div></div>
+    <div class="slabel">Матеріали (вибірка)</div>
+    <div class="row"><div><div class="rn">ГК вологостійкий Knauf 12,5 мм</div><div class="rd">15 шт. × 332 грн</div></div><div class="rp">4 980 грн</div></div>
+    <div class="row"><div><div class="rn">Профіль Knauf UD + CD</div><div class="rd">26+30 шт.</div></div><div class="rp">9 688 грн</div></div>
+    <div class="row"><div><div class="rn">Акустична мін. вата Ecosound</div><div class="rd">6 м² × 260 грн</div></div><div class="rp">1 560 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>43 058 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>18 887 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>4 956 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>66 901 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d7"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 8: Шпаклювання -->
+<div class="slide s8">
+  <div class="stories" id="st8"></div><div class="badge">Етап 7</div>
+  <div class="body"><div class="ecw" id="cw8">
+    <div class="enum">Шпаклювання</div>
+    <div class="etitle">Підготовка<br>поверхонь</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Шліфування штукатурки перед шпаклівкою</div><div class="rd">157,45 м² × 50 грн</div></div><div class="rp">7 873 грн</div></div>
+    <div class="row"><div><div class="rn">Ґрунтування стін</div><div class="rd">157,45 м² × 35 грн</div></div><div class="rp">5 511 грн</div></div>
+    <div class="row"><div><div class="rn">Шпаклювання стартовою шпаклівкою</div><div class="rd">157,45 м² × 160 грн</div></div><div class="rp">25 192 грн</div></div>
+    <div class="row"><div><div class="rn">Наклеювання скловолокна</div><div class="rd">116 м² × 180 грн</div></div><div class="rp">20 880 грн</div></div>
+    <div class="row"><div><div class="rn">Шпаклювання фінішне</div><div class="rd">157,45 м² × 320 грн</div></div><div class="rp">50 384 грн</div></div>
+    <div class="row"><div><div class="rn">Перетирання шпаклівки (2 рази)</div><div class="rd">157,45 м² × 160 грн</div></div><div class="rp">25 192 грн</div></div>
+    <div class="slabel">Матеріали (вибірка)</div>
+    <div class="row"><div><div class="rn">Шпаклівка Acryl-Putz start+finish 20 кг</div><div class="rd">15 шт. × 590 грн</div></div><div class="rp">8 850 грн</div></div>
+    <div class="row"><div><div class="rn">Шпаклівка фінішна Greinplast 17 кг</div><div class="rd">12 шт. × 1 280 грн</div></div><div class="rp">15 360 грн</div></div>
+    <div class="row"><div><div class="rn">Склополотно Welton + клей</div><div class="rd">4+4 шт.</div></div><div class="rp">15 188 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>188 365 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>52 593 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>19 277 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>260 235 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d8"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 9: Плитка -->
+<div class="slide s9">
+  <div class="stories" id="st9"></div><div class="badge">Етап 8</div>
+  <div class="body"><div class="ecw" id="cw9">
+    <div class="enum">Плитка</div>
+    <div class="etitle">Облицювання<br>керамогранітом</div>
+    <div class="div"></div>
+    <div class="slabel">Стіни</div>
+    <div class="row"><div><div class="rn">Гідроізоляція стін (2 шари)</div><div class="rd">18,87 м² × 300 грн</div></div><div class="rp">5 661 грн</div></div>
+    <div class="row"><div><div class="rn">Облицювання керамогранітом 1200×600</div><div class="rd">18,87 м² × 1 250 грн</div></div><div class="rp">23 588 грн</div></div>
+    <div class="row"><div><div class="rn">Облицювання (м.п.)</div><div class="rd">16 м.п. × 1 250 грн</div></div><div class="rp">20 000 грн</div></div>
+    <div class="row"><div><div class="rn">Фугування швів</div><div class="rd">18,87 м² × 250 грн</div></div><div class="rp">4 718 грн</div></div>
+    <div class="slabel">Підлога та ванна</div>
+    <div class="row"><div><div class="rn">Монтаж ванни + ніша + шумоізоляція</div><div class="rd">3 роботи</div></div><div class="rp">6 500 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж екрану ванни з ГК</div><div class="rd">1 шт. × 3 000 грн</div></div><div class="rp">3 000 грн</div></div>
+    <div class="row"><div><div class="rn">Підрізання під кутом 45°</div><div class="rd">32 м.п. × 420 грн</div></div><div class="rp">13 440 грн</div></div>
+    <div class="row"><div><div class="rn">Виготовлення та монтаж поличок</div><div class="rd">4 шт. × 2 500 грн</div></div><div class="rp">10 000 грн</div></div>
+    <div class="slabel">Матеріали (вибірка)</div>
+    <div class="row"><div><div class="rn">Гідроізоляція Ceresit CL 51 + стрічка</div><div class="rd">3 шт. + 20 м.п.</div></div><div class="rp">11 370 грн</div></div>
+    <div class="row"><div><div class="rn">Клей для плитки Kreisel Elasti Multi</div><div class="rd">12 шт. × 675 грн</div></div><div class="rp">8 100 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>114 878 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>30 033 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>11 593 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>156 504 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d9"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 10: Фарбування -->
+<div class="slide s10">
+  <div class="stories" id="st10"></div><div class="badge">Етап 9</div>
+  <div class="body"><div class="ecw" id="cw10">
+    <div class="enum">Фарбування</div>
+    <div class="etitle">Стіни та<br>стеля</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Знепилення стін</div><div class="rd">157,45 м² × 40 грн</div></div><div class="rp">6 298 грн</div></div>
+    <div class="row"><div><div class="rn">Ґрунтування стін</div><div class="rd">157,45 м² × 35 грн</div></div><div class="rp">5 511 грн</div></div>
+    <div class="row"><div><div class="rn">Ґрунтування (ґрунт-фарба)</div><div class="rd">157,45 м² × 100 грн</div></div><div class="rp">15 745 грн</div></div>
+    <div class="row"><div><div class="rn">Фарбування стін</div><div class="rd">157,45 м² × 200 грн</div></div><div class="rp">31 490 грн</div></div>
+    <div class="row"><div><div class="rn">Обклейка плівкою (вікна+стіни)</div><div class="rd">157,45 м² × 50 грн</div></div><div class="rp">7 873 грн</div></div>
+    <div class="slabel">Матеріали</div>
+    <div class="row"><div><div class="rn">Ґрунтовка Ceresit CT 17</div><div class="rd">3 шт. × 770 грн</div></div><div class="rp">2 310 грн</div></div>
+    <div class="row"><div><div class="rn">Валики, пензлі, стрічки малярні</div><div class="rd">комплект</div></div><div class="rp">4 486 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>85 893 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>12 444 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>7 867 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>106 203 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d10"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 11: Підлога -->
+<div class="slide s11">
+  <div class="stories" id="st11"></div><div class="badge">Етап 10</div>
+  <div class="body"><div class="ecw" id="cw11">
+    <div class="enum">Підлогове покриття</div>
+    <div class="etitle">Вінілова<br>підлога</div>
+    <div class="div"></div>
+    <div class="slabel">Роботи</div>
+    <div class="row"><div><div class="rn">Шліфування стяжки</div><div class="rd">67,5 м² × 80 грн</div></div><div class="rp">5 400 грн</div></div>
+    <div class="row"><div><div class="rn">Самовирівнювальна стяжка</div><div class="rd">67,5 м² × 400 грн</div></div><div class="rp">27 000 грн</div></div>
+    <div class="row"><div><div class="rn">Шліфування самовирівнювальної стяжки</div><div class="rd">67,5 м² × 80 грн</div></div><div class="rp">5 400 грн</div></div>
+    <div class="row"><div><div class="rn">Влаштування вінілової підлоги на клей</div><div class="rd">67,5 м² × 500 грн</div></div><div class="rp">33 750 грн</div></div>
+    <div class="row"><div><div class="rn">Застилання листами ДВП</div><div class="rd">67,5 м² × 80 грн</div></div><div class="rp">5 400 грн</div></div>
+    <div class="slabel">Матеріали</div>
+    <div class="row"><div><div class="rn">Самовирівнювальна підлога Siltek F-50</div><div class="rd">75 шт. × 408 грн</div></div><div class="rp">30 600 грн</div></div>
+    <div class="row"><div><div class="rn">Клей для паркету Forbo Eurocol</div><div class="rd">3 шт. × 3 957 грн</div></div><div class="rp">11 871 грн</div></div>
+    <div class="row"><div><div class="rn">ДВП 2440×1220×2 мм</div><div class="rd">24 шт. × 269 грн</div></div><div class="rp">6 456 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Роботи</span><span>81 675 грн</span></div>
+      <div class="tr"><span>Матеріали</span><span>59 143 грн</span></div>
+      <div class="tr"><span>Ведення об'єкту (8%)</span><span>11 265 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>152 083 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d11"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 12: Чистова електрика + сантехніка -->
+<div class="slide s12">
+  <div class="stories" id="st12"></div><div class="badge">Етап 11–12</div>
+  <div class="body"><div class="ecw" id="cw12">
+    <div class="enum">Чистові роботи</div>
+    <div class="etitle">Електрика<br>та сантехніка</div>
+    <div class="div"></div>
+    <div class="slabel">Чистова електрика</div>
+    <div class="row"><div><div class="rn">Монтаж розеток та вимикачів</div><div class="rd">77 шт. × 200 грн</div></div><div class="rp">15 400 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж прохідних / перехресних вимикачів</div><div class="rd">8 шт. × 250 грн</div></div><div class="rp">2 000 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж бра, вентилятора, терморегулятора</div><div class="rd">9 шт.</div></div><div class="rp">4 200 грн</div></div>
+    <div class="slabel">Чистова сантехніка</div>
+    <div class="row"><div><div class="rn">Встановлення раковин та мийки</div><div class="rd">3 шт. × 1 250 грн</div></div><div class="rp">3 750 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж змішувачів та сифонів</div><div class="rd">5 шт.</div></div><div class="rp">4 500 грн</div></div>
+    <div class="row"><div><div class="rn">Встановлення унітазу + гіг. душ</div><div class="rd">2 шт.</div></div><div class="rp">3 000 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж душових систем</div><div class="rd">2 шт.</div></div><div class="rp">2 900 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж побутової техніки (3 машини)</div><div class="rd">3 × 1 300 грн</div></div><div class="rp">3 900 грн</div></div>
+    <div class="row"><div><div class="rn">Монтаж водонагрівача + рушникосушки</div><div class="rd">2 шт.</div></div><div class="rp">3 520 грн</div></div>
+    <div class="tbox2">
+      <div class="tr"><span>Чистова електрика</span><span>25 380 грн</span></div>
+      <div class="tr"><span>Чистова сантехніка</span><span>26 773 грн</span></div>
+      <div class="tr big"><span>Разом</span><span>52 153 грн</span></div>
+    </div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d12"></div>
+    <button class="nbtn" onclick="go(C+1)"><span class="arr">›</span></button>
+  </div>
+</div>
+
+<!-- 13: Підсумок -->
+<div class="slide s13">
+  <div class="stories" id="st13"></div><div class="badge">Підсумок</div>
+  <div class="body"><div class="ecw" id="cw13">
+    <div class="enum">Загалом по кошторису</div>
+    <div class="etitle">Фінальна<br>сума</div>
+    <div class="stotal">1 515 591 грн</div>
+    <div class="brow sr" id="br0"><span class="sl2">Демонтаж</span><span class="sv">63 660 грн</span></div>
+    <div class="brow sr" id="br1"><span class="sl2">Траси кондиціонерів</span><span class="sv">47 834 грн</span></div>
+    <div class="brow sr" id="br2"><span class="sl2">Монтаж / Штукатурка</span><span class="sv">189 346 грн</span></div>
+    <div class="brow sr" id="br3"><span class="sl2">Водопостачання та опалення</span><span class="sv">132 397 грн</span></div>
+    <div class="brow sr" id="br4"><span class="sl2">Електромонтажні роботи</span><span class="sv">277 227 грн</span></div>
+    <div class="brow sr" id="br5"><span class="sl2">Стяжка</span><span class="sv">11 046 грн</span></div>
+    <div class="brow sr" id="br6"><span class="sl2">ГКЛ конструкції</span><span class="sv">66 901 грн</span></div>
+    <div class="brow sr" id="br7"><span class="sl2">Шпаклювання</span><span class="sv">260 235 грн</span></div>
+    <div class="brow sr" id="br8"><span class="sl2">Плитка</span><span class="sv">156 504 грн</span></div>
+    <div class="brow sr" id="br9"><span class="sl2">Фарбування</span><span class="sv">106 203 грн</span></div>
+    <div class="brow sr" id="br10"><span class="sl2">Підлогове покриття</span><span class="sv">152 083 грн</span></div>
+    <div class="brow sr" id="br11"><span class="sl2">Чистова електрика + сантехніка</span><span class="sv">52 153 грн</span></div>
+    <div class="brow div" id="br12" style="margin:12px 0"></div>
+    <div class="brow sr" id="br13"><span class="sl2">Вартість робіт</span><span class="sv">981 271 грн</span></div>
+    <div class="brow sr" id="br14"><span class="sl2">Матеріали</span><span class="sv">422 054 грн</span></div>
+    <div class="brow sr acc" id="br15"><span class="sl2">Разом до сплати</span><span class="sv">1 515 591 грн</span></div>
+    <div class="foot">SAMARSKYI · вул. Є. Сверстюка, 6 · ЖК Галактика · 19.07.2026</div>
+  </div></div>
+  <div class="nav">
+    <button class="nbtn prev" onclick="go(C-1)"><span class="arr">‹</span></button>
+    <div class="dots" id="d13"></div>
+    <button class="nbtn" disabled><span class="arr">›</span></button>
+  </div>
+</div>
+
+</div></div>
+
+<script>
+const N=14;
+let C=0;
+const track=document.getElementById('T');
+
+function render(instant){
+  if(instant){track.style.transition='none';track.style.transform='translateX(-'+(C*100)+'vw)';track.offsetHeight;track.style.transition='';}
+  else track.style.transform='translateX(-'+(C*100)+'vw)';
+
+  for(let i=0;i<N;i++){
+    const d=document.getElementById('d'+i);
+    if(d){d.innerHTML='';for(let j=0;j<N;j++){const x=document.createElement('div');x.className='dot'+(j===C?' on':'');d.appendChild(x);}}
+    const s=document.getElementById('st'+i);
+    if(s){s.innerHTML='';for(let j=0;j<N;j++){const seg=document.createElement('div');seg.className='seg'+(j<C?' past':j===C?' on':'');const f=document.createElement('div');f.className='seg-fill';seg.appendChild(f);s.appendChild(seg);}}
+  }
+  const cw=document.getElementById('cw'+C);
+  if(cw){cw.classList.remove('in');void cw.offsetWidth;setTimeout(()=>cw.classList.add('in'),20);}
+
+  if(C===13){
+    for(let i=0;i<=15;i++){
+      const br=document.getElementById('br'+i);
+      if(br){br.classList.remove('vis');setTimeout(()=>br.classList.add('vis'),160+i*55);}
+    }
+  }
+}
+
+function go(idx){
+  if(idx<0||idx>=N)return;
+  C=idx;render(false);
+}
+
+function tapTotal(){
+  const box=document.querySelector('.tbox');
+  box.classList.add('tap');
+  setTimeout(()=>box.classList.remove('tap'),280);
+  setTimeout(()=>go(13),180);
+}
+
+// pointer swipe
+let px=0,py=0,down=false,moved=false,scrolling=false;
+const app=document.querySelector('.app');
+app.addEventListener('pointerdown',e=>{px=e.clientX;py=e.clientY;down=true;moved=false;scrolling=false;},{passive:true});
+app.addEventListener('pointermove',e=>{
+  if(!down)return;
+  const dx=e.clientX-px,dy=e.clientY-py;
+  if(!moved){if(Math.abs(dy)>Math.abs(dx)+4){scrolling=true;down=false;return;}if(Math.abs(dx)>6)moved=true;}
+  if(moved&&!scrolling){track.style.transition='none';track.style.transform='translateX(calc(-'+(C*100)+'vw + '+( e.clientX-px)+'px))';}
+},{passive:true});
+function endSwipe(ex){if(!down)return;down=false;if(!moved||scrolling){track.style.transition='';render(false);return;}const dx=ex-px;track.style.transition='transform .44s cubic-bezier(.4,0,.2,1)';if(dx<-48)go(C+1);else if(dx>48)go(C-1);else render(false);}
+app.addEventListener('pointerup',e=>endSwipe(e.clientX),{passive:true});
+app.addEventListener('pointercancel',e=>endSwipe(e.clientX),{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')go(C+1);if(e.key==='ArrowLeft')go(C-1);});
+render(true);
+</script>
+</body>
+</html>
